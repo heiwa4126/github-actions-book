@@ -1,0 +1,66 @@
+on: push
+name: Expressions and functions examples workflow
+
+jobs:
+  print:
+    name: Literals
+    runs-on: ubuntu-latest
+    steps:
+      - run: printenv | grep 'LITERAL_'
+        env:
+          LITERAL_NULL: null # null型
+          LITERAL_BOOLEAN: ${{ true }} # boolean型
+          LITERAL_NUMBER: ${{ 1234 }} # number型
+          LITERAL_STRING: ${{ 'Hello' }} # string型（通常記法）
+          LITERAL_OMIT_STRING: World # string型（省略記法）
+
+  compare:
+    name: Compare functions
+    runs-on: ubuntu-latest
+    steps:
+      - run: printenv | grep '_FUNC'
+        env:
+          CONTAINS_FUNC: ${{ contains('Hello', 'ell') }} # 「ell」を含むか
+          STARTS_WITH_FUNC: ${{ startsWith('Hello', 'He') }} # 「He」で始まるか
+          ENDS_WITH_FUNC: ${{ endsWith('Hello', 'lo') }} # 「lo」で終わるか
+
+  generate:
+    name: Generate functions
+    runs-on: ubuntu-latest
+    steps:
+      - run: printenv | grep '_FUNC'
+        env:
+          FORMAT_FUNC: ${{ format('{0}, {1}.', 'Hi', 'world') }} # フォーマット
+          JOIN_FUNC: ${{ join(github.event.*.html_url, ', ') }} # カンマで結合
+
+  dump:
+    name: JSON functions
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "${CONTEXT}"
+        env:
+          CONTEXT: ${{ toJSON(github) }} # githubコンテキストをJSON文字列でダンプ
+
+  hash:
+    name: Hash functions
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: echo "${HASH}"
+        env:
+          HASH: ${{ hashFiles('.github/workflows/*.yml') }} # ハッシュ値の生成
+
+  condition:
+    name: Conditions
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "Hello"
+        if: ${{ contains(github.run_id, '1') }} # ワークフロー実行IDで分岐
+
+  fail:
+    name: Status check functions
+    runs-on: ubuntu-latest
+    steps:
+      - run: exit 1 # 終了ステータスがゼロ以外なので、エラーが発生する
+      - run: echo "Hello"
+        if: ${{ failure() }} # エラーが発生しても、failure関数があるので実行される
