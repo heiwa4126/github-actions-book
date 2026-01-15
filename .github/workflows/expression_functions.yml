@@ -8,7 +8,7 @@ jobs:
     steps:
       - run: printenv | grep 'LITERAL_'
         env:
-          LITERAL_NULL: null # null型
+          LITERAL_NULL: ${{ null }} # null型（文字列として設定）
           LITERAL_BOOLEAN: ${{ true }} # boolean型
           LITERAL_NUMBER: ${{ 1234 }} # number型
           LITERAL_STRING: ${{ 'Hello' }} # string型（通常記法）
@@ -32,6 +32,7 @@ jobs:
         env:
           FORMAT_FUNC: ${{ format('{0}, {1}.', 'Hi', 'world') }} # フォーマット
           JOIN_FUNC: ${{ join(github.event.*.html_url, ', ') }} # カンマで結合
+  # jqで書くと `jq -r '.event | .[]? | objects | .html_url? // empty'`
 
   dump:
     name: JSON functions
